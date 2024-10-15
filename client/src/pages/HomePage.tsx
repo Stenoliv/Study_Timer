@@ -2,7 +2,7 @@
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="min-h-screen flex justify-center items-center">
         <h1>Homepage</h1>
     </div>
   )
