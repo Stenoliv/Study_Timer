@@ -1,10 +1,12 @@
+import { AuthResponse } from "@/types/auth";
+import { JwtType } from "@/types/jwt";
 import { generateToken } from "@utils/jwt";
 import { User } from "src/db/models/user.model";
 
 export async function loginUser(
   email: string,
   password: string
-): Promise<{ user: User; token: string }> {
+): Promise<AuthResponse> {
   // Search user by email
   const user = await User.findOne({ where: { email } });
   if (!user) {
@@ -17,22 +19,27 @@ export async function loginUser(
     throw new Error("Invalid password");
   }
 
-  const token = generateToken(user.id);
+  const access: string = generateToken(user.id, JwtType.Access);
+  const refresh: string = generateToken(user.id, JwtType.Refresh);
+  const tokens = { access, refresh };
 
-  return { user, token };
+  return { user, tokens };
 }
 
 export async function registerUser(
   username: string,
   email: string,
   password: string
-) {
-  const user = await User.create({ username, email, password });
+): Promise<AuthResponse> {
+  const user = new User({ username, email, password });
+  await user.save();
   if (!user) {
     throw new Error("Failed to create user, username or email already taken!");
   }
 
-  const token = generateToken(user.id);
+  const access = generateToken(user.id, JwtType.Access);
+  const refresh = generateToken(user.id, JwtType.Refresh);
+  const tokens = { access, refresh };
 
-  return token;
+  return { user, tokens };
 }

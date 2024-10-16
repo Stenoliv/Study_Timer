@@ -4,21 +4,21 @@ export default {
   theme: {
     extend: {
       keyframes: {
-        "toast-pop-in": {
+        "pop-in": {
           "0%": { transform: "scale(0.9)", opacity: "0" },
           "100%": { tansform: "scale(1.0)", opacity: "1" },
         },
-        "toast-pop-out": {
+        "pop-out": {
           "0%": { transform: "scale(1.0)", opacity: "1" },
           "100%": { transform: "scale(0.9)", opacity: "0" },
         },
       },
       animation: {
-        "toast-pop-in": "toast-pop-in 0.3s ease-out",
-        "toast-pop-out": "toast-pop-out 0.3s ease-out forwards",
+        "pop-in": "pop-in 0.1s ease-in-out",
+        "pop-out": "pop-out 0.1s ease-in-out forwards",
       },
       colors: {
-        primary: "#1f1d21",
+        primary: "#141323",
       },
     },
   },

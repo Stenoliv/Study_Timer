@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 interface AuthContextType {
   authenticated: boolean;
   login: (email: string, password: string) => void;
+  register: (username: string, email: string, password: string) => void;
   logout: () => void;
 }
 
@@ -21,8 +22,8 @@ interface AuthProviderProps {
 // Create the AuthProvider component
 export const AuthProvider = (props: AuthProviderProps) => {
   const { children } = props;
-  const { authenticated, setAuhtenticated, setUser, setToken } =
-    useAuthStore.getState();
+  const { authenticated, setAuhtenticated, setUser, setTokens } =
+    useAuthStore();
   const navigate = useNavigate();
 
   const login = (email: string, password: string) => {
@@ -30,24 +31,44 @@ export const AuthProvider = (props: AuthProviderProps) => {
       .then((response) => {
         toast.success(`Success! Signed in as ${response.data.user.username}`);
         setAuhtenticated(true);
-        setToken(response.data.token);
+        setTokens(response.data.setTokens);
         setUser(response.data.user);
         navigate("/");
       })
       .catch((error) => {
-        console.log("Error login");
         toast.error("Failed to Signin: " + error.message, 2500);
+      });
+  };
+
+  const register = (username: string, email: string, password: string) => {
+    API.post("/auth/signup", {
+      username,
+      email,
+      password,
+    })
+      .then((response) => {
+        toast.success(
+          `Success! Welcome to study timer ${response.data.user.username}`
+        );
+        setAuhtenticated(true);
+        setTokens(response.data.tokens);
+        setUser(response.data.user);
+        navigate("/");
+      })
+      .catch((error) => {
+        toast.error("Failed to Signup: " + error.message, 3500);
       });
   };
 
   const logout = () => {
     setAuhtenticated(false);
-    setToken("");
     setUser(null);
+    setTokens({ access: null, refresh: null });
+    toast.success("You logged out!");
   };
 
   return (
-    <AuthContext.Provider value={{ authenticated, login, logout }}>
+    <AuthContext.Provider value={{ authenticated, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

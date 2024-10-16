@@ -5,6 +5,7 @@ import {
   Column,
   CreatedAt,
   DeletedAt,
+  HasMany,
   Index,
   Model,
   NotNull,
@@ -38,13 +39,13 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   declare id: string;
   // Created at:
   @CreatedAt
-  declare creationDate: Date;
+  declare createdAt: Date;
   // Updated at:
   @UpdatedAt
-  declare updateDate: Date;
+  declare updatedAt: Date;
   // Deleted at:
   @DeletedAt
-  declare deletionDate: Date;
+  declare deletedAt: Date;
 
   // Username with validation:
   @NotNull
@@ -90,4 +91,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
       instance.id = nanoid();
     }
   }
+
+  // Associations:
 }

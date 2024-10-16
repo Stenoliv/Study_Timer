@@ -1,9 +1,22 @@
+import { useAuth } from "@/contexts/AuthContext";
+import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function Signup() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { register } = useAuth();
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    register(username, email, password);
+  };
+
   return (
     <div className="flex justify-center items-center bg-blue-500 shadow-lg rounded-2xl p-5">
-      <form className="w-full max-w-md">
+      <form className="w-full max-w-md" onSubmit={handleSubmit}>
         <h2 className="text-white text-center text-3xl font-bold mb-2 cursor-default">
           Signup to Study Timer
         </h2>
@@ -14,6 +27,8 @@ export default function Signup() {
           <input
             className="w-full p-2 bg-white border border-grey-300 rounded-md"
             placeholder="Enter your username"
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
             type="text"
           />
         </div>
@@ -24,6 +39,8 @@ export default function Signup() {
           <input
             className="w-full p-2 bg-white border border-grey-300 rounded-md"
             placeholder="Enter your email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
             type="text"
           />
         </div>
@@ -34,6 +51,8 @@ export default function Signup() {
           <input
             className="w-full p-2 bg-white border border-grey-300 rounded-md"
             placeholder="Enter your password"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             type="password"
           />
         </div>

@@ -1,17 +1,16 @@
 import { loginUser, registerUser } from "@services/auth";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 export const userLoginController = async (
   req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ): Promise<void> => {
   const { email, password } = req.body;
 
   try {
-    const { user, token } = await loginUser(email, password);
+    const { user, tokens } = await loginUser(email, password);
 
-    res.status(200).json({ token: token, user: user });
+    res.status(200).json({ user, tokens });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
@@ -19,16 +18,20 @@ export const userLoginController = async (
 
 export const userRegisterController = async (
   req: Request,
-  res: Response,
-  _next: NextFunction
+  res: Response
 ): Promise<void> => {
   const { username, email, password } = req.body;
 
   try {
-    const token = await registerUser(username, email, password);
+    const { user, tokens } = await registerUser(username, email, password);
 
-    res.status(201).json({ token });
+    res.status(201).json({ user, tokens });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
 };
+
+export const userRefreshController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {};

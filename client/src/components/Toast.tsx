@@ -36,7 +36,7 @@ export default function Toast(props: ToastProps) {
         if (newRemainingTime <= 0) {
           clearInterval(intervalRef.current!);
           setIsVisible(false); // Trigger pop-out animation
-          setTimeout(() => onClose(id), 300); // Close the toast after animation
+          setTimeout(() => onClose(id), 100); // Close the toast after animation
         }
       }
     }, 10); // Update every 100ms
@@ -66,7 +66,7 @@ export default function Toast(props: ToastProps) {
   return (
     <div
       className={`${
-        isVisible ? "animate-toast-pop-in" : "animate-toast-pop-out"
+        isVisible ? "animate-pop-in" : "animate-pop-out"
       } ${toastStyle} relative text-white flex items-center justify-between px-4 py-3 m-2 rounded-md shadow-md hover:border-white cursor-pointer pointer-events-auto`}
       onClick={() => {
         setIsVisible(false);

@@ -86,7 +86,8 @@
       "@services/*": ["src/services/*.service.ts"],
       "@routes/*": ["src/routes/*.route.ts"],
       "@middleware/*": ["src/middleware/*.ts"],
-      "@utils/*": ["src/utils/*.ts"]
+      "@utils/*": ["src/utils/*.ts"],
+      "@/*": ["src/*"]
     },
 
     /* Type Checking */

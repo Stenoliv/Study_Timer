@@ -18,15 +18,12 @@ function App() {
       <Route element={<DefaultLayout />}>
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
-        <Route
-          element={
-            <ProtectedRoute>
-              <StudyTimerLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
+        <Route element={<ProtectedRoute />}>
+          {/** Protected by checking if authenticated or not */}
+          <Route element={<StudyTimerLayout />}>
+            <Route index element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
         </Route>
       </Route>
     )
