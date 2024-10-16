@@ -1,7 +1,10 @@
 import { generateToken } from "@utils/jwt";
-import User from "src/db/models/user.model";
+import { User } from "src/db/models/user.model";
 
-export async function loginUser(email: string, password: string) {
+export async function loginUser(
+  email: string,
+  password: string
+): Promise<{ user: User; token: string }> {
   // Search user by email
   const user = await User.findOne({ where: { email } });
   if (!user) {
@@ -16,7 +19,7 @@ export async function loginUser(email: string, password: string) {
 
   const token = generateToken(user.id);
 
-  return token;
+  return { user, token };
 }
 
 export async function registerUser(

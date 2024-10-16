@@ -30,8 +30,9 @@ export interface UserCreationAttributes
   timestamps: true,
   paranoid: true,
 })
-class User extends Model<UserAttributes, UserCreationAttributes> {
+export class User extends Model<UserAttributes, UserCreationAttributes> {
   // ID of type nanoid
+  @Unique
   @PrimaryKey
   @Column({ type: DataTypes.STRING(21) })
   declare id: string;
@@ -46,24 +47,24 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   declare deletionDate: Date;
 
   // Username with validation:
-  @Column({ type: DataTypes.STRING(10) })
   @NotNull
   @Unique
   @Index
   @Validate({ len: [3, 10] })
+  @Column({ type: DataTypes.STRING(10), allowNull: false })
   declare username: string;
 
   // Email with validation:
-  @Column({ type: DataTypes.STRING(50) })
   @NotNull
   @Unique
   @Index
   @Validate({ isEmail: true })
+  @Column({ type: DataTypes.STRING(50), allowNull: false })
   declare email: string;
 
   // Password
-  @Column({ type: DataTypes.STRING(255) })
   @NotNull
+  @Column({ type: DataTypes.STRING(255), allowNull: false })
   declare password: string;
 
   // Functions:
@@ -84,9 +85,9 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   @BeforeCreate
   static generateId(instance: User) {
     if (!instance.id) {
+      console.log("Generating ID");
+      // Check if id is undefined or null
       instance.id = nanoid();
     }
   }
 }
-
-export default User;

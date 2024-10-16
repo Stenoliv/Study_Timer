@@ -9,9 +9,9 @@ export const userLoginController = async (
   const { email, password } = req.body;
 
   try {
-    const token = await loginUser(email, password);
+    const { user, token } = await loginUser(email, password);
 
-    res.status(200).json({ token: token });
+    res.status(200).json({ token: token, user: user });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
