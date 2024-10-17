@@ -1,4 +1,4 @@
-import StudyList from "@/components/study/list/studyList";
+import StudyList from "@/components/study/list/StudyList";
 import { useAuthStore } from "@/stores/auth";
 
 export default function Profile() {
