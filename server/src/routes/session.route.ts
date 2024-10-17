@@ -1,10 +1,14 @@
-import { getStats } from "@/controllers/session.controller";
+import {
+  createSessionController,
+  getSessionStatsController,
+} from "@/controllers/session.controller";
 import AuthMiddleware from "@/middleware/authMiddleware";
 import { Router } from "express";
 
 const sessionRoutes = Router();
 sessionRoutes.use(AuthMiddleware);
 
-sessionRoutes.get("/stats", getStats);
+sessionRoutes.post("", createSessionController);
+sessionRoutes.get("/stats", getSessionStatsController);
 
 export default sessionRoutes;

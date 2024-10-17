@@ -1,8 +1,12 @@
 import { Session } from "@/db/models/session.model";
+import { createSession } from "@/services/session.service";
 import { Request, Response } from "express";
 import { Op } from "sequelize";
 
-export const getStats = async (req: Request, res: Response) => {
+export const getSessionStatsController = async (
+  req: Request,
+  res: Response
+) => {
   if (!req.user) {
     res.status(401).json({
       error: "Not authenticated: Couldn't get authentication state",
@@ -62,4 +66,25 @@ export const getStats = async (req: Request, res: Response) => {
     currentPage: page,
     totalPages: Math.ceil(totalSessions.length / limit) || 1,
   });
+};
+
+export const createSessionController = async (req: Request, res: Response) => {
+  const { name, time } = req.body;
+  const userId = req.user?.sub;
+
+  if (!userId) {
+    return;
+  }
+
+  try {
+    const session = createSession(userId, name, time);
+
+    res.status(200).json({
+      session,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: "Failed to create session",
+    });
+  }
 };

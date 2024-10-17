@@ -26,7 +26,7 @@ export interface SessionAttribute {
 }
 
 export interface SessionCreationAttribute
-  extends Optional<SessionAttribute, "id"> {}
+  extends Optional<SessionAttribute, "id" | "createdAt" | "updatedAt"> {}
 
 @Table({ timestamps: true })
 export class Session extends Model<SessionAttribute, SessionCreationAttribute> {
