@@ -7,7 +7,7 @@ export type Session = {
 };
 
 export type SessionStats = {
-  totalHours: number;
-  todayHours: number;
   sessions: Session[];
+  todaysMinutes: number;
+  totalHours: number;
 };

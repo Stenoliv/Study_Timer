@@ -31,7 +31,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
       .then((response) => {
         toast.success(`Success! Signed in as ${response.data.user.username}`);
         setAuhtenticated(true);
-        setTokens(response.data.setTokens);
+        setTokens(response.data.tokens);
         setUser(response.data.user);
         navigate("/");
       })

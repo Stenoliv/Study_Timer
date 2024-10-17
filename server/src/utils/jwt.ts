@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { nanoid } from "nanoid";
-import { JwtType, jwtPayload } from "@/types/jwt";
+import { JwtType, jwtPayload } from "@/@types/jwt";
 import { Token } from "@/db/models/token.model";
 import moment from "moment";
 

@@ -5,8 +5,10 @@ import axios, { AxiosError } from "axios";
 
 const { tokens } = useAuthStore.getState();
 
+const BASE_URL = "http://localhost:3000";
+
 export const API = axios.create({
-  baseURL: "http://localhost:3000/",
+  baseURL: BASE_URL,
   headers: {
     Authorization: "Bearer " + tokens?.access,
   },
@@ -22,7 +24,7 @@ const ErrorResponse = async (error: AxiosError<any>): Promise<any> => {
   ) {
     (error.config.headers as any)._retry = true;
     try {
-      const response = await axios.get(`/auth/refresh`, {
+      const response = await axios.get(`${BASE_URL}/auth/refresh`, {
         headers: { Authorization: `Bearer ${tokens.refresh}` },
       });
 
@@ -48,6 +50,7 @@ API.interceptors.request.use((config) => {
   config.headers.Authorization = `Bearer ${tokens?.access}`;
   return config;
 });
+
 API.interceptors.response.use((response) => {
   return response;
 }, ErrorResponse);

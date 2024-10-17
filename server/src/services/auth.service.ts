@@ -1,5 +1,5 @@
-import { AuthResponse } from "@/types/auth";
-import { JwtType } from "@/types/jwt";
+import { AuthResponse } from "@/@types/auth";
+import { JwtType } from "@/@types/jwt";
 import { generateToken } from "@/utils/jwt";
 import { User } from "@/db/models/user.model";
 
