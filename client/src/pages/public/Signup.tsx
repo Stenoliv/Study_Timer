@@ -30,6 +30,11 @@ export default function Signup() {
             onChange={(e) => setUsername(e.target.value)}
             value={username}
             type="text"
+            required
+            aria-required
+            aria-description="user-name"
+            minLength={3}
+            maxLength={10}
           />
         </div>
         <div className="mb-2">
@@ -42,6 +47,9 @@ export default function Signup() {
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             type="text"
+            required
+            aria-required
+            aria-description="user-email"
           />
         </div>
         <div className="mb-4">
@@ -54,6 +62,10 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
+            required
+            aria-required
+            aria-description="user-password"
+            minLength={6}
           />
         </div>
         <button

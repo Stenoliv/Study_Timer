@@ -16,6 +16,8 @@ import {
   Validate,
 } from "sequelize-typescript";
 import bcrypt from "bcrypt";
+import { Session } from "./session.model";
+import { Token } from "./token.model";
 
 export interface UserAttributes {
   id: string;
@@ -29,7 +31,6 @@ export interface UserCreationAttributes
 
 @Table({
   timestamps: true,
-  paranoid: true,
 })
 export class User extends Model<UserAttributes, UserCreationAttributes> {
   // ID of type nanoid
@@ -43,9 +44,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   // Updated at:
   @UpdatedAt
   declare updatedAt: Date;
-  // Deleted at:
-  @DeletedAt
-  declare deletedAt: Date;
 
   // Username with validation:
   @NotNull
@@ -74,6 +72,11 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     return bcrypt.compare(password, this.password);
   }
 
+  public toJSON() {
+    const { password, ...userData } = this.get();
+    return userData;
+  }
+
   // Hooks:
   // Hash user password before create
   @BeforeCreate
@@ -86,11 +89,15 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   @BeforeCreate
   static generateId(instance: User) {
     if (!instance.id) {
-      console.log("Generating ID");
       // Check if id is undefined or null
       instance.id = nanoid();
     }
   }
 
   // Associations:
+  @HasMany(() => Session)
+  declare sessions: Session[];
+
+  @HasMany(() => Token)
+  declare tokens: Token[];
 }

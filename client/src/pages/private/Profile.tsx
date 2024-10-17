@@ -1,4 +1,4 @@
-import StatsList from "@/components/stats/statsList";
+import StudyList from "@/components/study/list/studyList";
 import { useAuthStore } from "@/stores/auth";
 
 export default function Profile() {
@@ -36,7 +36,7 @@ export default function Profile() {
         <h2 className="text-white font-bold text-3xl mb-2 underline">
           Study stats:
         </h2>{" "}
-        <StatsList />
+        <StudyList />
       </div>
     </div>
   );

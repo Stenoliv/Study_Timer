@@ -47,6 +47,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
       password,
     })
       .then((response) => {
+        console.log(response.data);
         toast.success(
           `Success! Welcome to study timer ${response.data.user.username}`
         );

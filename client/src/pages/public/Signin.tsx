@@ -33,6 +33,11 @@ export default function Signin() {
             onChange={(e) => setEmail(e.target.value)}
             value={email}
             type="text"
+            required
+            aria-required
+            aria-description="user-email"
+            minLength={3}
+            maxLength={50}
           />
         </div>
         <div className="mb-4">
@@ -45,6 +50,10 @@ export default function Signin() {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
+            required
+            aria-required
+            aria-description="user-password"
+            minLength={6}
           />
         </div>
         <button

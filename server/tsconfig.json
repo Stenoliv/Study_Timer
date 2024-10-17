@@ -82,11 +82,6 @@
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
 
     "paths": {
-      "@controllers/*": ["src/controllers/*.controller.ts"],
-      "@services/*": ["src/services/*.service.ts"],
-      "@routes/*": ["src/routes/*.route.ts"],
-      "@middleware/*": ["src/middleware/*.ts"],
-      "@utils/*": ["src/utils/*.ts"],
       "@/*": ["src/*"]
     },
 

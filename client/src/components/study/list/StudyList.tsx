@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "@/contexts/ToastManager";
 import { SessionStats } from "@/types/session";
 import { API } from "@/utils/api";
+import StudyItem from "../item/StudyItem";
 
-export default function StatsList() {
+export default function StudyList() {
   const { isPending, data, error } = useQuery<SessionStats, Error>({
     queryKey: ["stats"],
     queryFn: statsLoader,
@@ -28,6 +29,16 @@ export default function StatsList() {
           Total-Hours: {data?.totalHours}
         </label>
         <p></p>
+      </div>
+      <div>
+        <h3 className="text-white text-xl font-bold underline">
+          Study sessions:
+        </h3>
+        <div className="flex flex-col w-full">
+          {data.sessions &&
+            Array.isArray(data.sessions) &&
+            data.sessions.map((session) => <StudyItem session={session} />)}
+        </div>
       </div>
     </div>
   );

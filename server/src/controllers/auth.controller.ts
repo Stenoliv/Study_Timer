@@ -1,4 +1,4 @@
-import { loginUser, registerUser } from "@services/auth";
+import { loginUser, registerUser } from "@/services/auth.service";
 import { Request, Response } from "express";
 
 export const userLoginController = async (

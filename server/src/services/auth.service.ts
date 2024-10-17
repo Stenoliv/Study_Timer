@@ -1,7 +1,7 @@
 import { AuthResponse } from "@/types/auth";
 import { JwtType } from "@/types/jwt";
-import { generateToken } from "@utils/jwt";
-import { User } from "src/db/models/user.model";
+import { generateToken } from "@/utils/jwt";
+import { User } from "@/db/models/user.model";
 
 export async function loginUser(
   email: string,
@@ -19,8 +19,8 @@ export async function loginUser(
     throw new Error("Invalid password");
   }
 
-  const access: string = generateToken(user.id, JwtType.Access);
-  const refresh: string = generateToken(user.id, JwtType.Refresh);
+  const access: string = await generateToken(user.id, JwtType.Access);
+  const refresh: string = await generateToken(user.id, JwtType.Refresh);
   const tokens = { access, refresh };
 
   return { user, tokens };
@@ -37,9 +37,11 @@ export async function registerUser(
     throw new Error("Failed to create user, username or email already taken!");
   }
 
-  const access = generateToken(user.id, JwtType.Access);
-  const refresh = generateToken(user.id, JwtType.Refresh);
+  const access: string = await generateToken(user.id, JwtType.Access);
+  const refresh: string = await generateToken(user.id, JwtType.Refresh);
   const tokens = { access, refresh };
 
   return { user, tokens };
 }
+
+export async function logoutUser(tokenId: string) {}

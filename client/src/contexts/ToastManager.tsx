@@ -37,7 +37,7 @@ const ToastManager: React.FC = () => {
   }, [addToast]);
 
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none flex flex-col justify-start items-end">
+    <div className="absolute top-0 left-0 right-0 bottom-0 pointer-events-none flex flex-col justify-start items-end z-0">
       {toasts.map((toast) => (
         <Toast
           key={toast.id}

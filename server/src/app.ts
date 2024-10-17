@@ -1,6 +1,6 @@
 import express, { Express } from "express";
-import { errorHandler } from "@middleware/errorHandler";
-import authRoutes from "@routes/auth";
+import { errorHandler } from "@/middleware/errorHandler";
+import authRoutes from "@/routes/auth.route";
 import cors from "cors";
 
 const app: Express = express();

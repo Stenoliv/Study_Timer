@@ -8,7 +8,6 @@ import DefaultLayout from "@/layouts/DefaultLayout";
 import Home from "@/pages/private/Home";
 import Signin from "@/pages/public/Signin";
 import Signup from "@/pages/public/Signup";
-import StudyTimerLayout from "@/layouts/StudyTimerLayout";
 import Profile from "@/pages/private/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -20,10 +19,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route element={<ProtectedRoute />}>
           {/** Protected by checking if authenticated or not */}
-          <Route element={<StudyTimerLayout />}>
-            <Route index element={<Home />} />
-            <Route path="/profile" element={<Profile />} />
-          </Route>
+          <Route index element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
     )

@@ -9,7 +9,7 @@ export default function MainHeader() {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const avatarRef = useRef<HTMLImageElement | null>(null);
 
-  const { logout } = useAuth();
+  const { authenticated, logout } = useAuth();
 
   // Functions
   const toggleDropdown = () => {
@@ -52,44 +52,48 @@ export default function MainHeader() {
   }, []);
 
   return (
-    <div className="flex justify-between items-center w-full bg-blue-500 p-2 drop-shadow-xl">
+    <div className="flex justify-between items-center w-full bg-blue-500 p-2 drop-shadow-xl pointer-events-auto z-20">
       <a className="text-white text-4xl mb-2 font-bold cursor-pointer" href="/">
         Study Timer
       </a>
-      <div className="relative mr-5">
-        <img
-          ref={avatarRef}
-          className="bg-blue-800 w-12 h-12 p-1 mx-2 mr-0 rounded-full hover:cursor-pointer"
-          src="src/assets/avatar.svg"
-          alt="User avatar"
-          onClick={toggleDropdown}
-        />
-        {/* Dropdown Menu */}
-        {isDropdownOpen && (
-          <div
-            ref={dropdownRef}
-            className={`absolute right-0 flex flex-col mt-5 bg-blue-700 shadow-lg rounded-lg justify-center ${
-              isClosing ? "animate-pop-out" : "animate-pop-in"
-            } ${isClosing && !isDropdownOpen ? "opacity-0" : "opacity-100"}`}
-            onAnimationEnd={() => {
-              if (!isDropdownOpen) setDropdownOpen(false);
-            }}
-          >
-            <Link
-              to="/profile"
-              className="block px-4 py-2 text-white font-semibold text-l hover:bg-blue-800 rounded-t-md"
+      {authenticated && (
+        <div className="relative mr-5">
+          <img
+            ref={avatarRef}
+            className="bg-blue-800 w-12 h-12 p-1 rounded-full hover:cursor-pointer"
+            src="src/assets/avatar.svg"
+            alt="User avatar"
+            onClick={toggleDropdown}
+          />
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div
+              ref={dropdownRef}
+              className={`absolute right-0 flex flex-col mt-5 bg-blue-700 shadow-lg rounded-lg justify-center ${
+                isClosing
+                  ? "animate-pop-out pointer-events-none"
+                  : "animate-pop-in"
+              } ${isClosing && !isDropdownOpen ? "opacity-0" : "opacity-100"}`}
+              onAnimationEnd={() => {
+                if (!isDropdownOpen) setDropdownOpen(false);
+              }}
             >
-              Profile
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="block px-4 py-2 text-white font-semibold text-l hover:bg-blue-800 rounded-b-md"
-            >
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+              <Link
+                to="/profile"
+                className="block px-4 py-2 text-white font-semibold text-l hover:bg-blue-800 rounded-t-md"
+              >
+                Profile
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="block px-4 py-2 text-white font-semibold text-l hover:bg-blue-800 rounded-b-md"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

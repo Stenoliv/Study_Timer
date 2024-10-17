@@ -67,7 +67,7 @@ export default function Toast(props: ToastProps) {
     <div
       className={`${
         isVisible ? "animate-pop-in" : "animate-pop-out"
-      } ${toastStyle} relative text-white flex items-center justify-between px-4 py-3 m-2 rounded-md shadow-md hover:border-white cursor-pointer pointer-events-auto`}
+      } ${toastStyle} relative text-white flex items-center justify-between px-4 py-3 m-2 rounded-md shadow-md hover:border-white cursor-pointer pointer-events-auto z-50`}
       onClick={() => {
         setIsVisible(false);
         setTimeout(() => onClose(id), 300); // Close immediately on click
