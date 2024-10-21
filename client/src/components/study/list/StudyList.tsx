@@ -41,6 +41,7 @@ export default function StudyList() {
 	const todaysSeconds = data.todaysMinutes % 60;
 
 	const totalHours = Math.floor(data.totalHours / 3600);
+	const totalMinutes = Math.floor((data.totalHours % 3600) / 60);
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -57,7 +58,7 @@ export default function StudyList() {
 					Total-Hours:
 				</label>
 				<p className="w-1/2 text-right text-gray-400 font-semibold text-xl">
-					{totalHours} h
+					{totalHours} h {totalMinutes} m
 				</p>
 			</div>
 			<div>
