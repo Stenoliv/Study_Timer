@@ -25,15 +25,26 @@ export default function Home() {
     }
   };
 
-  const stopTimer = () => {
+  const stopTimer = async () => {
     if (isRunning && intervalRef.current) {
       const sessionName = sessionNameMaker();
-      API.post("/sessions", {
+      const response = await API.post("/sessions", {
         name: sessionName,
         time: time,
       });
-      localStorage.setItem("Time_Studied", JSON.stringify(time));
-      localStorage.setItem("Session_Name", JSON.stringify(sessionName));
+      if (!response) {
+        console.log("error saving to database");
+        return;
+      }
+      try {
+        localStorage.setItem(
+          "Session_id",
+          JSON.stringify(response.data.session.id)
+        );
+      } catch {
+        console.log("Something went wrong");
+      }
+      localStorage.setItem("Session_Time", JSON.stringify(time));
       clearInterval(intervalRef.current);
       intervalRef.current = null;
       setIsRunning(false);
@@ -47,9 +58,10 @@ export default function Home() {
       setIsRunning(false);
     }
   };
-  const continuePreviousSession = () => {
-    const prevSession = localStorage.getItem("Time_Studied");
-    const sessionTime = Number(prevSession);
+  const continuePreviousSession = async () => {
+    const id = localStorage.getItem("Session_id");
+    const prevSession = await API.get(`/sessions/${id}`);
+    const sessionTime = Number(prevSession.data.time);
     setTime(sessionTime);
   };
   const formatTime = (totalSeconds: number): string => {
@@ -61,13 +73,30 @@ export default function Home() {
 
     return `${format(hours)}:${format(minutes)}:${format(seconds)}`;
   };
-  const getFromLocalStorage = (locals: string): string => {
-    if (localStorage.getItem(locals) != null) {
-      const last_session = localStorage.getItem(locals);
-      const session_time = Number(last_session);
-      const last_ = formatTime(session_time);
-      return `${last_}`;
-    } else return `No session found`;
+
+  const getSession = async (locals: string) => {
+    try {
+      const session = await API.get(`/sessions`);
+      return session.data.session.time;
+    } catch {
+      if (localStorage.getItem(locals) != null) {
+        const last_session = localStorage.getItem(locals);
+        const session_time = Number(last_session);
+        const last_ = formatTime(session_time);
+        return `${last_}`;
+      } else {
+        return `No session found locally`;
+      }
+    }
+  };
+  const previousSession = (local: string): string => {
+    const sessionTime = getSession(local);
+    if (!sessionTime) {
+      return "error getting session";
+    } else {
+      const gottenTime = sessionTime.finally.toString();
+      return gottenTime;
+    }
   };
 
   return (
@@ -75,7 +104,7 @@ export default function Home() {
       <div className="border-white border-4 rounded-xl p-10 bg-slate-800 text-center">
         <h1 className="text-white text-6xl mb-4 underline">Study Timer</h1>
         <p className="text-white text-xl text-center mb-2">
-          last session {getFromLocalStorage("Time_Studied")}
+          last session {previousSession("Session_Time")}
         </p>
         <p className="text-white text-5xl text-center ">{formatTime(time)}</p>
         <div className="text-center mt-8">
