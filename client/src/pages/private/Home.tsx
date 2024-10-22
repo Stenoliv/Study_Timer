@@ -19,8 +19,8 @@ export default function Home() {
 	>({
 		queryKey: ["last_session"],
 		queryFn: () => loadLastSession(setLastSession),
+		refetchOnWindowFocus: "always",
 		refetchOnMount: true,
-		refetchOnWindowFocus: true,
 		retry: true,
 	});
 

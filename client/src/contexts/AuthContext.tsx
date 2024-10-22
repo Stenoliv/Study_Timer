@@ -3,6 +3,7 @@ import { API } from "@/utils/api";
 import { createContext, useContext, ReactNode } from "react";
 import { toast } from "./ToastManager";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // Define the shape of the authentication context
 interface AuthContextType {
@@ -36,8 +37,13 @@ export const AuthProvider = (props: AuthProviderProps) => {
 				navigate("/");
 			})
 			.catch((error) => {
-				console.log(error);
-				toast.error("Failed to Signin: " + error.message, 2500);
+				if (axios.isAxiosError(error)) {
+					const errorMessage =
+						error.response?.data?.error || "An unkown error occured.";
+					toast.error("Failed to Signin: " + errorMessage, 2500);
+				} else {
+					toast.error("Failed to Signin: " + error.message, 2000);
+				}
 			});
 	};
 
@@ -58,8 +64,13 @@ export const AuthProvider = (props: AuthProviderProps) => {
 				navigate("/");
 			})
 			.catch((error) => {
-				console.log(error);
-				toast.error("Failed to Signup: " + error.message, 3500);
+				if (axios.isAxiosError(error)) {
+					const errorMessage =
+						error.response?.data?.error || "An unkown error occured.";
+					toast.error("Failed to Signup: " + errorMessage, 2500);
+				} else {
+					toast.error("Failed to Signup: " + error.message, 2000);
+				}
 			});
 	};
 
