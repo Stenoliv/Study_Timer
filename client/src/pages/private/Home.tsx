@@ -109,7 +109,7 @@ export default function Home() {
 						: isLoading
 						? "Loading last session..."
 						: isSuccess
-						? formatTime(data?.time || 0)
+						? formatTime(data.time)
 						: "No last session found"}
 				</p>
 				<p className="text-white text-5xl text-center ">{formatTime(time)}</p>
