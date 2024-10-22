@@ -1,6 +1,6 @@
 import { API } from "@/utils/api";
 import { useRef, useState } from "react";
-export default function Home() {
+export default async function Home() {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -74,10 +74,13 @@ export default function Home() {
     return `${format(hours)}:${format(minutes)}:${format(seconds)}`;
   };
 
-  const getSession = async (locals: string) => {
+  const getSession = async (locals: string): Promise<string> => {
     try {
-      const session = await API.get(`/sessions`);
-      return session.data.session.time;
+      const id = localStorage.getItem("Session_id");
+      const session = await API.get(`/sessions/${id}`);
+      const sessionTime = session.data.session.time.toString();
+      console.log(sessionTime);
+      return sessionTime;
     } catch {
       if (localStorage.getItem(locals) != null) {
         const last_session = localStorage.getItem(locals);
@@ -89,22 +92,13 @@ export default function Home() {
       }
     }
   };
-  const previousSession = (local: string): string => {
-    const sessionTime = getSession(local);
-    if (!sessionTime) {
-      return "error getting session";
-    } else {
-      const gottenTime = sessionTime.finally.toString();
-      return gottenTime;
-    }
-  };
 
   return (
     <div className="flex grow justify-center items-center flex-col">
       <div className="border-white border-4 rounded-xl p-10 bg-slate-800 text-center">
         <h1 className="text-white text-6xl mb-4 underline">Study Timer</h1>
-        <p className="text-white text-xl text-center mb-2">
-          last session {previousSession("Session_Time")}
+        <p className="text-white text-xl text-center mb-2" id="previousSession">
+          last session {await getSession("Session_Time")}
         </p>
         <p className="text-white text-5xl text-center ">{formatTime(time)}</p>
         <div className="text-center mt-8">
