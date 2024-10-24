@@ -21,13 +21,15 @@ import { Token } from "./token.model";
 
 export interface UserAttributes {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
   username: string;
   email: string;
   password: string;
 }
 
 export interface UserCreationAttributes
-  extends Optional<UserAttributes, "id"> {}
+  extends Optional<UserAttributes, "id" | "createdAt" | "updatedAt"> {}
 
 @Table({
   timestamps: true,

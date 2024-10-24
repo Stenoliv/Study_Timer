@@ -1,8 +1,14 @@
 import { Session } from "@/db/models/session.model";
+import { User } from "@/db/models/user.model";
+import { createSession } from "@/services/session.service";
 import { Request, Response } from "express";
+import { id } from "jest.config";
 import { Op } from "sequelize";
 
-export const getStats = async (req: Request, res: Response) => {
+export const getSessionStatsController = async (
+  req: Request,
+  res: Response
+) => {
   if (!req.user) {
     res.status(401).json({
       error: "Not authenticated: Couldn't get authentication state",
@@ -62,4 +68,137 @@ export const getStats = async (req: Request, res: Response) => {
     currentPage: page,
     totalPages: Math.ceil(totalSessions.length / limit) || 1,
   });
+};
+
+export const createSessionController = async (req: Request, res: Response) => {
+  const { name, time } = req.body;
+  const userId = req.user?.sub;
+
+  if (!userId) {
+    throw new Error("Failed to create session");
+  }
+
+  try {
+    const session = await createSession(userId, name, time);
+    res.status(200).json({
+      session,
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: "Failed to create session",
+    });
+  }
+};
+
+export const getSessionController = async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401).json({
+      error: "Not authenticated: Couldn't get authentication state",
+    });
+    return;
+  }
+
+  const userId = req.user.sub;
+  const { id } = req.params;
+
+  try {
+    const session = await Session.findOne({
+      where: {
+        userId,
+        id,
+      },
+    });
+
+    if (!session) {
+      res.status(404).json({
+        error: "Session not found for this user with the given parameters",
+      });
+      return;
+    }
+    res.status(200).json({ session });
+    return;
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    res.status(500).json({
+      error: "Internal server error while fetching session",
+    });
+    return;
+  }
+};
+
+export const getLatestSessionController = async (
+  req: Request,
+  res: Response
+) => {
+  if (!req.user) {
+    res.status(401).json({
+      error: "Not authenticated: Couldn't get authentication state",
+    });
+    return;
+  }
+
+  const userId = req.user.sub;
+
+  try {
+    const session = await Session.findOne({
+      where: {
+        userId,
+      },
+      order: [["createdAt", "DESC"]],
+    });
+
+    if (!session) {
+      res.status(404).json({
+        error: "Session not found for this user with the given parameters",
+      });
+      return;
+    }
+    res.status(200).json({ session });
+    return;
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    res.status(500).json({
+      error: "Internal server error while fetching session",
+    });
+    return;
+  }
+};
+
+export const updateSessionController = async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401).json({
+      error: "Not authenticated: Couldn't get authentication state",
+    });
+    return;
+  }
+  const userId = req.user.sub;
+  const { id } = req.params;
+  const updatedTime = req.body.time;
+  try {
+    const updatedSession = await Session.update(
+      { time: updatedTime },
+      {
+        where: {
+          userId,
+          id,
+        },
+        returning: true,
+      }
+    );
+    if (!updatedSession[1]) {
+      res.status(404).json({ error: "Session not found" });
+      return;
+    }
+    res.status(200).json({
+      message: "Session updated successfully",
+      session: updatedSession[1][0], // The updated session data (based on your ORM's return)
+    });
+    return;
+  } catch (error) {
+    console.error("Error updating session:", error);
+    res.status(500).json({
+      error: "Internal server error while updating session",
+    });
+    return;
+  }
 };
