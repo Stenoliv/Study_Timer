@@ -47,7 +47,7 @@ export default function Settings({
             <div>
               <button
                 className={`border-white border-2 rounded-md m-4 p-2 text-white ${
-                  timerType === "classic" ? "bg-slate-700" : "bg-slate-900"
+                  timerType === "classic" ? "bg-slate-500" : "bg-slate-900"
                 }`}
                 onClick={() => handleTimerTypeChange("classic")}
               >
@@ -55,7 +55,7 @@ export default function Settings({
               </button>
               <button
                 className={`border-white border-2 rounded-md m-4 p-2 text-white ${
-                  timerType === "counter" ? "bg-slate-700" : "bg-slate-900"
+                  timerType === "counter" ? "bg-slate-500" : "bg-slate-900"
                 }`}
                 onClick={() => handleTimerTypeChange("counter")}
               >
