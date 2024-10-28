@@ -1,5 +1,6 @@
 import {
 	createSessionController,
+	deleteSessionController,
 	getLatestSessionController,
 	getSessionController,
 	getSessionStatsController,
@@ -17,5 +18,6 @@ sessionRoutes.get("/stats", getSessionStatsController);
 sessionRoutes.get("/last", getLatestSessionController);
 sessionRoutes.get("/:id", getSessionController);
 sessionRoutes.patch("/:id", updateSessionController);
+sessionRoutes.delete("/:id", deleteSessionController);
 
 export default sessionRoutes;
