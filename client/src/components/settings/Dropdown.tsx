@@ -10,14 +10,14 @@ const Dropdown = ({ currentTime, onSelect }) => {
       <div>
         <button
           onClick={toggleDropdown}
-          className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="inline-flex justify-between w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-slate-900 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
           {selectedOption + " seconds" || "Select Time"}
         </button>
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 w-28">
+        <div className="absolute z-10 mt-2 rounded-md shadow-lg bg-slate-900 ring-1 ring-black ring-opacity-5 w-28">
           <div
             className="py-1"
             role="menu"
@@ -31,7 +31,7 @@ const Dropdown = ({ currentTime, onSelect }) => {
                   handleOptionClick(option);
                   onSelect(option);
                 }}
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 text-center w-full"
+                className="block px-4 py-2 text-sm text-white hover:bg-blue-700 text-center w-full"
                 role="menuitem"
               >
                 {option} seconds

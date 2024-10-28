@@ -30,7 +30,7 @@ export default function Settings({
         <div className="absolute bg-slate-800 z-10 py-4 px-20 ">
           <div className="flex flex-col">
             <button
-              className="bg-gray-900 text-white p-2 border-2 rounded-lg border-white text-xl"
+              className="bg-gray-900 text-white p-2 border-2 rounded-lg border-white text-xl hover:bg-blue-700"
               onClick={toggleSettings}
             >
               Close settings
@@ -47,7 +47,9 @@ export default function Settings({
             <div>
               <button
                 className={`border-white border-2 rounded-md m-4 p-2 text-white ${
-                  timerType === "classic" ? "bg-slate-700" : "bg-slate-900"
+                  timerType === "classic"
+                    ? "bg-blue-500"
+                    : "bg-slate-900 hover:bg-blue-700"
                 }`}
                 onClick={() => handleTimerTypeChange("classic")}
               >
@@ -55,7 +57,9 @@ export default function Settings({
               </button>
               <button
                 className={`border-white border-2 rounded-md m-4 p-2 text-white ${
-                  timerType === "counter" ? "bg-slate-700" : "bg-slate-900"
+                  timerType === "counter"
+                    ? "bg-blue-500 "
+                    : "bg-slate-900 hover:bg-blue-700"
                 }`}
                 onClick={() => handleTimerTypeChange("counter")}
               >
@@ -65,7 +69,7 @@ export default function Settings({
           </div>
           <div>
             <button
-              className="border-white border-2 rounded-md p-2 text-white bg-slate-900 px-12"
+              className="border-white border-2 rounded-md p-2 text-white bg-slate-900 px-12 hover:bg-blue-700"
               onClick={deleteSession}
             >
               Delete current session
