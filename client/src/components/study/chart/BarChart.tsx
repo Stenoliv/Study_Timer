@@ -3,16 +3,29 @@ import { toast } from "@/contexts/ToastManager";
 import { SessionStats } from "@/types/session";
 import { API } from "@/utils/api";
 import {
-	Bar,
-	BarChart,
-	CartesianGrid,
-	Legend,
-	ResponsiveContainer,
-	Tooltip,
-	XAxis,
-	YAxis,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import dayjs from "dayjs";
+
+const COLORS = [
+  "#8884d8",
+  "#82ca9d",
+  "#ffc658",
+  "#ff8042",
+  "#0088FE",
+  "#FFBB28",
+  "#FF8042",
+];
 
 const formatTime = (seconds) => {
 	const hrs = Math.floor(seconds / 3600);
@@ -43,16 +56,31 @@ export default function BarChartStats() {
 			return sessionDate.isAfter(dayjs().subtract(7, "day"));
 		}) || [];
 
-	// Map sessions to chart data format
-	const chartData = pastSevenDaysSessions.map((session) => ({
-		name: dayjs(session.createdAt).format("MM-DD"), // Format as needed
-		time: session.time, // Original time in seconds for the bar height
-		formattedTime: formatTime(session.time), // Formatted time for display
-	}));
+  // Map sessions to chart data format for the bar chart
+  const chartData = pastSevenDaysSessions.map((session) => ({
+    name: dayjs(session.createdAt).format("MM-DD"),
+    time: session.time,
+    formattedTime: formatTime(session.time),
+  }));
+
+  // Aggregate time per weekday
+  const weekdayTotals = pastSevenDaysSessions.reduce((acc, session) => {
+    const weekday = dayjs(session.createdAt).format("dddd"); // Get weekday name
+    acc[weekday] = (acc[weekday] || 0) + session.time; // Sum time for each weekday
+    return acc;
+  }, {});
+
+  // Convert aggregated weekday data to pie chart format
+  const pieChartData = Object.entries(weekdayTotals).map(([day, total]) => ({
+    name: day,
+    value: total,
+  }));
 
 	return (
 		<div className="flex flex-col">
+      {/* Bar Chart for sessions in the past 7 days */}
 			<div className="flex flex-col flex-1">
+        <h1 className="text-white text-xl my-4">Your studies past 7 days</h1>
 				{chartData.length > 0 ? (
 					<ResponsiveContainer width="100%" height={400}>
 						<BarChart
@@ -66,7 +94,7 @@ export default function BarChartStats() {
 							<Legend />
 							<Bar
 								barSize={30}
-								dataKey="time" // Using seconds here for correct bar height
+								dataKey="time"
 								fill="#8884d8"
 								name="Studied time"
 							/>
@@ -78,17 +106,52 @@ export default function BarChartStats() {
 					</span>
 				)}
 			</div>
+
+      {/* Pie Chart for total study time per weekday */}
+      <div className="flex flex-col w-full my-2">
+        <h1 className="text-white text-xl my-4">
+          Total study time per weekday
+        </h1>
+        {pieChartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={150}
+                label={(entry) => `${entry.name}: ${formatTime(entry.value)}`}
+              >
+                {pieChartData.map((_, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => formatTime(value)} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <span className="w-full text-center text-white pt-4 font-bold text-xl">
+            No study sessions recorded
+          </span>
+        )}
+      </div>
 		</div>
 	);
 }
 
 // Function to load session stats
 const statsLoader = async (): Promise<SessionStats> => {
-	try {
-		const response = await API.get(`/sessions/stats`);
-		return response.data;
-	} catch (error: any) {
-		toast.error("Failed to load data: " + error?.message);
-		throw new Error(error.message); // Throw the error to handle it in the query
-	}
+  try {
+    const response = await API.get(`/sessions/stats`);
+    return response.data;
+  } catch (error: any) {
+    toast.error("Failed to load data: " + error?.message);
+    throw new Error(error.message);
+  }
 };
