@@ -56,13 +56,28 @@ export default function BarChartStats() {
       return sessionDate.isAfter(dayjs().subtract(7, "day"));
     }) || [];
 
-  // Map sessions to chart data format for the bar chart
-  const chartData = pastSevenDaysSessions.map((session) => ({
-    name: dayjs(session.createdAt).format("MM-DD"),
-    time: session.time,
-    formattedTime: formatTime(session.time),
-  }));
+  // Generate an array of the past 7 days with default time set to 0
+  const lastSevenDays = Array.from({ length: 7 }, (_, i) => {
+    const date = dayjs().subtract(i, "day").format("DD-MM");
+    return { name: date, time: 0, formattedTime: formatTime(0) };
+  }).reverse(); // Reverse to have the oldest day first
 
+  // Aggregate session times by day
+  const dailyTotals = pastSevenDaysSessions.reduce((acc, session) => {
+    const date = dayjs(session.createdAt).format("DD-MM");
+    acc[date] = (acc[date] || 0) + session.time; // Sum up time for each date
+    return acc;
+  }, {});
+
+  // Map the session data onto the last 7 days array
+  const chartData = lastSevenDays.map((day) => {
+    const total = dailyTotals[day.name] || 0; // Get total time for the day or 0 if none
+    return {
+      name: day.name,
+      time: total,
+      formattedTime: formatTime(total),
+    };
+  });
   // Aggregate time per weekday
   const weekdayTotals = pastSevenDaysSessions.reduce((acc, session) => {
     const weekday = dayjs(session.createdAt).format("dddd"); // Get weekday name
