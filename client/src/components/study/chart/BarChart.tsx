@@ -3,28 +3,28 @@ import { toast } from "@/contexts/ToastManager";
 import { SessionStats } from "@/types/session";
 import { API } from "@/utils/api";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-  PieChart,
-  Pie,
-  Cell,
+	Bar,
+	BarChart,
+	CartesianGrid,
+	Legend,
+	ResponsiveContainer,
+	Tooltip,
+	XAxis,
+	YAxis,
+	PieChart,
+	Pie,
+	Cell,
 } from "recharts";
 import dayjs from "dayjs";
 
 const COLORS = [
-  "#8884d8",
-  "#82ca9d",
-  "#ffc658",
-  "#ff8042",
-  "#0088FE",
-  "#FFBB28",
-  "#FF8042",
+	"#8884d8",
+	"#82ca9d",
+	"#ffc658",
+	"#ff8042",
+	"#0088FE",
+	"#FFBB28",
+	"#FF8042",
 ];
 
 const formatTime = (seconds) => {
@@ -56,36 +56,36 @@ export default function BarChartStats() {
 			return sessionDate.isAfter(dayjs().subtract(7, "day"));
 		}) || [];
 
-  // Map sessions to chart data format for the bar chart
-  const chartData = pastSevenDaysSessions.map((session) => ({
-    name: dayjs(session.createdAt).format("MM-DD"),
-    time: session.time,
-    formattedTime: formatTime(session.time),
-  }));
+	// Map sessions to chart data format for the bar chart
+	const chartData = pastSevenDaysSessions.map((session) => ({
+		name: dayjs(session.createdAt).format("MM-DD"),
+		time: session.time,
+		formattedTime: formatTime(session.time),
+	}));
 
-  // Aggregate time per weekday
-  const weekdayTotals = pastSevenDaysSessions.reduce((acc, session) => {
-    const weekday = dayjs(session.createdAt).format("dddd"); // Get weekday name
-    acc[weekday] = (acc[weekday] || 0) + session.time; // Sum time for each weekday
-    return acc;
-  }, {});
+	// Aggregate time per weekday
+	const weekdayTotals = pastSevenDaysSessions.reduce((acc, session) => {
+		const weekday = dayjs(session.createdAt).format("dddd"); // Get weekday name
+		acc[weekday] = (acc[weekday] || 0) + session.time; // Sum time for each weekday
+		return acc;
+	}, {});
 
-  // Convert aggregated weekday data to pie chart format
-  const pieChartData = Object.entries(weekdayTotals).map(([day, total]) => ({
-    name: day,
-    value: total,
-  }));
+	// Convert aggregated weekday data to pie chart format
+	const pieChartData = Object.entries(weekdayTotals).map(([day, total]) => ({
+		name: day,
+		value: total,
+	}));
 
 	return (
-		<div className="flex flex-col">
-      {/* Bar Chart for sessions in the past 7 days */}
+		<>
+			{/* Bar Chart for sessions in the past 7 days */}
 			<div className="flex flex-col flex-1">
-        <h1 className="text-white text-xl my-4">Your studies past 7 days</h1>
+				<h1 className="text-white text-xl my-4">Your studies past 7 days</h1>
 				{chartData.length > 0 ? (
-					<ResponsiveContainer width="100%" height={400}>
+					<ResponsiveContainer width="100%" height={300}>
 						<BarChart
 							data={chartData}
-							margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+							margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
 						>
 							<CartesianGrid strokeDasharray="3 3" />
 							<XAxis dataKey="name" />
@@ -106,52 +106,51 @@ export default function BarChartStats() {
 					</span>
 				)}
 			</div>
-
-      {/* Pie Chart for total study time per weekday */}
-      <div className="flex flex-col w-full my-2">
-        <h1 className="text-white text-xl my-4">
-          Total study time per weekday
-        </h1>
-        {pieChartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
-              <Pie
-                data={pieChartData}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={150}
-                label={(entry) => `${entry.name}: ${formatTime(entry.value)}`}
-              >
-                {pieChartData.map((_, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => formatTime(value)} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        ) : (
-          <span className="w-full text-center text-white pt-4 font-bold text-xl">
-            No study sessions recorded
-          </span>
-        )}
-      </div>
-		</div>
+			{/* Pie Chart for total study time per weekday */}
+			<div className="flex flex-col flex-1">
+				<h1 className="text-white text-xl my-4">
+					Total study time per weekday
+				</h1>
+				{pieChartData.length > 0 ? (
+					<ResponsiveContainer width="100%" height={200}>
+						<PieChart>
+							<Pie
+								data={pieChartData}
+								dataKey="value"
+								nameKey="name"
+								cx="50%"
+								cy="50%"
+								outerRadius={70}
+								label={(entry) => `${entry.name}: ${formatTime(entry.value)}`}
+							>
+								{pieChartData.map((_, index) => (
+									<Cell
+										key={`cell-${index}`}
+										fill={COLORS[index % COLORS.length]}
+									/>
+								))}
+							</Pie>
+							<Tooltip formatter={(value) => formatTime(value)} />
+							<Legend />
+						</PieChart>
+					</ResponsiveContainer>
+				) : (
+					<span className="w-full text-center text-white pt-4 font-bold text-xl">
+						No study sessions recorded
+					</span>
+				)}
+			</div>
+		</>
 	);
 }
 
 // Function to load session stats
 const statsLoader = async (): Promise<SessionStats> => {
-  try {
-    const response = await API.get(`/sessions/stats`);
-    return response.data;
-  } catch (error: any) {
-    toast.error("Failed to load data: " + error?.message);
-    throw new Error(error.message);
-  }
+	try {
+		const response = await API.get(`/sessions/stats`);
+		return response.data;
+	} catch (error: any) {
+		toast.error("Failed to load data: " + error?.message);
+		throw new Error(error.message);
+	}
 };

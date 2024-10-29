@@ -35,7 +35,7 @@ export default function Profile() {
 				<h2 className="text-white font-bold text-3xl mb-2 underline">
 					Study stats:
 				</h2>{" "}
-				<div className="flex flex-col lg:flex-row gap-5">
+				<div className="flex flex-col lg:flex lg:flex-wrap lg:flex-wrap-reverse gap-5">
 					<BarChart />
 					<StudyList />
 				</div>
