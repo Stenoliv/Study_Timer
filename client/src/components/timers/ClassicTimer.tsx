@@ -202,6 +202,7 @@ const loadLastSession = async (setLastSession: (session: Session) => void) => {
 		setLastSession(response.data.session);
 		return response.data.session;
 	} catch (error: any) {
+		console.error(error);
 		toast.error("Failed to retrieve lastSession", 1000);
 		return null;
 	}
