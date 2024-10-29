@@ -3,16 +3,24 @@ import { toast } from "@/contexts/ToastManager";
 import { SessionStats } from "@/types/session";
 import { API } from "@/utils/api";
 import {
-	Bar,
-	BarChart,
-	CartesianGrid,
 	Legend,
 	ResponsiveContainer,
 	Tooltip,
-	XAxis,
-	YAxis,
+	PieChart,
+	Pie,
+	Cell,
 } from "recharts";
 import dayjs from "dayjs";
+
+const COLORS = [
+	"#8884d8",
+	"#82ca9d",
+	"#ffc658",
+	"#ff8042",
+	"#0088FE",
+	"#FFBB28",
+	"#FF8042",
+];
 
 const formatTime = (seconds) => {
 	const hrs = Math.floor(seconds / 3600);
@@ -23,7 +31,7 @@ const formatTime = (seconds) => {
 		.padStart(2, "0")}.${secs.toString().padStart(2, "0")}`;
 };
 
-export default function BarChartStats() {
+export default function PieChartStats() {
 	const { isPending, data, error } = useQuery<SessionStats, Error>({
 		queryKey: ["stats"],
 		queryFn: () => statsLoader(),
@@ -43,36 +51,48 @@ export default function BarChartStats() {
 			return sessionDate.isAfter(dayjs().subtract(7, "day"));
 		}) || [];
 
-	// Map sessions to chart data format for the bar chart
-	const chartData = pastSevenDaysSessions.map((session) => ({
-		name: dayjs(session.createdAt).format("MM-DD"),
-		time: session.time,
-		formattedTime: formatTime(session.time),
+	// Aggregate time per weekday
+	const weekdayTotals = pastSevenDaysSessions.reduce((acc, session) => {
+		const weekday = dayjs(session.createdAt).format("dddd"); // Get weekday name
+		acc[weekday] = (acc[weekday] || 0) + session.time; // Sum time for each weekday
+		return acc;
+	}, {});
+
+	// Convert aggregated weekday data to pie chart format
+	const pieChartData = Object.entries(weekdayTotals).map(([day, total]) => ({
+		name: day,
+		value: total,
 	}));
 
 	return (
 		<>
-			{/* Bar Chart for sessions in the past 7 days */}
+			{/* Pie Chart for total study time per weekday */}
 			<div className="flex flex-col">
-				<h1 className="text-white text-xl mb-4">Your studies past 7 days</h1>
-				{chartData.length > 0 ? (
-					<ResponsiveContainer width="100%" height={300}>
-						<BarChart
-							data={chartData}
-							margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-						>
-							<CartesianGrid strokeDasharray="3 3" />
-							<XAxis dataKey="name" />
-							<YAxis />
+				<h1 className="text-white text-xl mb-4">
+					Total study time per weekday
+				</h1>
+				{pieChartData.length > 0 ? (
+					<ResponsiveContainer width="100%" height={200}>
+						<PieChart>
+							<Pie
+								data={pieChartData}
+								dataKey="value"
+								nameKey="name"
+								cx="50%"
+								cy="50%"
+								outerRadius={70}
+								label={(entry) => `${entry.name}: ${formatTime(entry.value)}`}
+							>
+								{pieChartData.map((_, index) => (
+									<Cell
+										key={`cell-${index}`}
+										fill={COLORS[index % COLORS.length]}
+									/>
+								))}
+							</Pie>
 							<Tooltip formatter={(value) => formatTime(value)} />
 							<Legend />
-							<Bar
-								barSize={30}
-								dataKey="time"
-								fill="#8884d8"
-								name="Studied time"
-							/>
-						</BarChart>
+						</PieChart>
 					</ResponsiveContainer>
 				) : (
 					<span className="w-full text-center text-white pt-4 font-bold text-xl">
