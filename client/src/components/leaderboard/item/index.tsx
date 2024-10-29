@@ -17,9 +17,16 @@ export default function LeaderboardItem(props: LeaderboardItemProps) {
 	const seconds = time % 60;
 
 	const style = classNames({
-		"bg-blue-600 border-white border-b-4": isUser(user),
-		"bg-slate-600": position % 2 === 0 && !isUser(user),
-		"bg-slate-700": position % 2 !== 0 && !isUser(user),
+		"border-white border-b-4": isUser(user),
+		"bg-blue-600": isUser(user) && ![3, 2, 1].find((p) => p === position),
+		"bg-slate-600":
+			position % 2 === 0 &&
+			!isUser(user) &&
+			![3, 2, 1].find((p) => p === position),
+		"bg-slate-700":
+			position % 2 !== 0 &&
+			!isUser(user) &&
+			![3, 2, 1].find((p) => p === position),
 		"bg-yellow-400": position === 1,
 		"bg-stone-400": position === 2,
 		"bg-amber-700": position === 3,
