@@ -127,7 +127,7 @@ export default function ClassicTimer({ timerType, setTimerType }) {
           timerType={timerType}
           setTimerType={setTimerType}
         />
-        <h1 className="text-white text-6xl mb-4">Classic TImer</h1>
+        <h1 className="text-white text-6xl mb-4">Classic Timer</h1>
         <p className="text-white text-xl text-center mb-2" id="previousSession">
           last session{" "}
           {isError
