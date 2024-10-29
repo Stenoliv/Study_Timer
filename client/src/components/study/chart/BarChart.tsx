@@ -45,13 +45,13 @@ export default function BarChartStats() {
 
   // Generate an array of the past 7 days with default time set to 0
   const lastSevenDays = Array.from({ length: 7 }, (_, i) => {
-    const date = dayjs().subtract(i, "day").format("MM-DD");
+    const date = dayjs().subtract(i, "day").format("DD-MM");
     return { name: date, time: 0, formattedTime: formatTime(0) };
   }).reverse();
 
   // Aggregate session times by day
   const dailyTotals = pastSevenDaysSessions.reduce((acc, session) => {
-    const date = dayjs(session.createdAt).format("MM-DD");
+    const date = dayjs(session.createdAt).format("DD-MM");
     acc[date] = (acc[date] || 0) + session.time;
     return acc;
   }, {});
