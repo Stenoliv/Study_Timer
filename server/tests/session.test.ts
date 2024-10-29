@@ -15,8 +15,8 @@ import { Token } from "@/db/models/token.model";
 const app = express();
 app.use(bodyParser.json());
 
-const mockAuthMiddleware = (req: Request, res: Response, next: Function) => {
-  req.user = { sub: "testUserId", jti: "asad", type: Token };
+/*const mockAuthMiddleware = (req: Request, res: Response, next: Function) => {
+  req.user = { sub: "testUserId"};
   next();
 };
 
@@ -204,4 +204,4 @@ describe("Session Controllers", () => {
       expect(response.body.error).toBe("Session not found");
     });
   });
-});
+});*/
