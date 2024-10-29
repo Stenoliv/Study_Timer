@@ -3,12 +3,33 @@
 @tailwind utilities;
 
 body {
-  padding: 0;
-  margin: 0;
-  width: 100dvw;
-  height: 100dvh;
+	padding: 0;
+	margin: 0;
+	width: 100dvw;
+	height: 100dvh;
 }
 
 #root {
-  flex: 1;
+	height: 100dvh;
+	width: 100dvw;
+	overflow: hidden;
+}
+
+::-webkit-scrollbar {
+	height: 10px;
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background-color: transparent;
+	margin: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgb(37 99 235);
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: rgb(30 64 175);
 }
