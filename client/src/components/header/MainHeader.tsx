@@ -60,7 +60,7 @@ export default function MainHeader() {
 				Study Timer
 			</a>
 			{authenticated ? (
-				<div className="flex relative mr-5 items-center gap-2">
+				<div className="relative mr-5 items-center gap-2">
 					<img
 						ref={avatarRef}
 						className="relative bg-blue-800 w-12 h-12 p-1 rounded-full hover:cursor-pointer"

@@ -72,7 +72,7 @@ export default function PieChartStats() {
 					Total study time per weekday
 				</h1>
 				{pieChartData.length > 0 ? (
-					<ResponsiveContainer width="100%" height={200}>
+					<ResponsiveContainer width="100%" height={300}>
 						<PieChart>
 							<Pie
 								data={pieChartData}
