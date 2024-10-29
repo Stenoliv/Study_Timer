@@ -43,12 +43,28 @@ export default function BarChartStats() {
       return sessionDate.isAfter(dayjs().subtract(7, "day"));
     }) || [];
 
-  // Map sessions to chart data format for the bar chart
-  const chartData = pastSevenDaysSessions.map((session) => ({
-    name: dayjs(session.createdAt).format("MM-DD"),
-    time: session.time,
-    formattedTime: formatTime(session.time),
-  }));
+  // Generate an array of the past 7 days with default time set to 0
+  const lastSevenDays = Array.from({ length: 7 }, (_, i) => {
+    const date = dayjs().subtract(i, "day").format("MM-DD");
+    return { name: date, time: 0, formattedTime: formatTime(0) };
+  }).reverse();
+
+  // Aggregate session times by day
+  const dailyTotals = pastSevenDaysSessions.reduce((acc, session) => {
+    const date = dayjs(session.createdAt).format("MM-DD");
+    acc[date] = (acc[date] || 0) + session.time;
+    return acc;
+  }, {});
+
+  // Map the session data onto the last 7 days array
+  const chartData = lastSevenDays.map((day) => {
+    const total = dailyTotals[day.name] || 0;
+    return {
+      name: day.name,
+      time: total,
+      formattedTime: formatTime(total),
+    };
+  });
 
   return (
     <>
