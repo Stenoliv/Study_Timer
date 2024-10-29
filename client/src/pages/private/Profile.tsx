@@ -1,5 +1,6 @@
 import StudyList from "@/components/study/list/StudyList";
 import { useAuthStore } from "@/stores/auth";
+import BarChart from "@/components/study/chart/BarChart";
 
 export default function Profile() {
   const { user } = useAuthStore();
@@ -35,6 +36,7 @@ export default function Profile() {
           Study stats:
         </h2>{" "}
         <StudyList />
+        <BarChart />
       </div>
     </div>
   );
