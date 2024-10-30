@@ -26,7 +26,7 @@ export default function MainHeader() {
 			<div className="relative mr-5">
 				<img
 					className="bg-blue-800 w-12 h-12 p-1 mx-2 mr-0 rounded-full hover:cursor-pointer"
-					src="src/assets/avatar.svg"
+					src="avatar.svg"
 					alt="User avatar"
 					onClick={toggleDropdown}
 				/>
