@@ -18,6 +18,7 @@ jest.mock("@/db/models/session.model");
 const mockedSession = Session as jest.Mocked<typeof Session>;
 
 let authToken: string;
+let userId: string;
 interface SessionAttributes {
   id: string;
   userId: string;
@@ -27,17 +28,6 @@ interface SessionAttributes {
 // Type the mock as a Model instance with these attributes
 import { Model } from "sequelize";
 type MockSessionModel = Model<SessionAttributes> & SessionAttributes;
-
-// Mock login route for test
-app.post("/api/auth/login", (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  if (username === "testUser" && password === "pw123456") {
-    authToken = "mockedJwtToken";
-    res.status(200).json({ token: authToken });
-  } else {
-    res.status(401).json({ error: "Invalid credentials" });
-  }
-});
 
 // Define routes for testing
 app.get("/api/sessions/stats", getSessionStatsController);
@@ -50,11 +40,15 @@ app.delete("/api/sessions/:id", deleteSessionController);
 describe("Session Controllers", () => {
   beforeAll(async () => {
     // Login and store the token before running tests
-    const response = await request(app).post("/api/auth/login").send({
-      username: "testUser",
+    const response = await request(app).post("/api/auth/signin").send({
+      email: "test@test.test",
       password: "pw123456",
     });
-    authToken = response.body.token;
+    authToken = response.body.tokens;
+    userId = response.body.user;
+    console.log(response.body);
+    console.log(userId);
+    console.log(authToken);
   });
 
   afterEach(() => {
@@ -76,7 +70,9 @@ describe("Session Controllers", () => {
     it("should return 401 for unauthenticated user", async () => {
       const response = await request(app).get("/api/sessions/stats");
       expect(response.status).toBe(401);
-      expect(response.body.error).toBe("Not authenticated");
+      expect(response.body.error).toBe(
+        "Not authenticated: Couldn't get authentication state"
+      );
     });
   });
 
@@ -85,7 +81,7 @@ describe("Session Controllers", () => {
     it("should create a session for authenticated user", async () => {
       mockedSession.create.mockResolvedValue({
         id: "newSessionId",
-        userId: "testUserId",
+        userId,
         name: "Test Session",
         time: 120,
       });
@@ -105,7 +101,7 @@ describe("Session Controllers", () => {
     it("should return session for authenticated user", async () => {
       mockedSession.findOne.mockResolvedValueOnce({
         id: "sessionId",
-        userId: "testUserId",
+        userId,
         time: 120,
       } as MockSessionModel);
 
