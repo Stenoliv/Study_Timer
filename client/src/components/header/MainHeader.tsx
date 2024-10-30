@@ -64,7 +64,7 @@ export default function MainHeader() {
 					<img
 						ref={avatarRef}
 						className="relative bg-blue-800 w-12 h-12 p-1 rounded-full hover:cursor-pointer"
-						src="src/assets/avatar.svg"
+						src="/avatar.svg"
 						alt="User avatar"
 						onClick={toggleDropdown}
 					/>

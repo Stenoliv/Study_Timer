@@ -5,7 +5,7 @@
 	"scripts": {
 		"test": "cross-env NODE_ENV=test jest --testTimeout=5000",
 		"build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-		"start": "node ./dist/index.js",
+		"start": "node dist/index.js",
 		"dev": "nodemon"
 	},
 	"keywords": [],

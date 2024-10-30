@@ -5,10 +5,8 @@ import axios, { AxiosError } from "axios";
 
 const { tokens } = useAuthStore.getState();
 
-const BASE_URL = "http://localhost:3000";
-
 export const API = axios.create({
-	baseURL: BASE_URL,
+	baseURL: "/api",
 	headers: {
 		Authorization: "Bearer " + tokens?.access,
 	},
@@ -24,7 +22,7 @@ const ErrorResponse = async (error: AxiosError<any>): Promise<any> => {
 	) {
 		(error.config.headers as any)._retry = true;
 		try {
-			const response = await axios.get(`${BASE_URL}/auth/refresh`, {
+			const response = await axios.get(`/api/auth/refresh`, {
 				headers: { Authorization: `Bearer ${tokens.refresh}` },
 			});
 

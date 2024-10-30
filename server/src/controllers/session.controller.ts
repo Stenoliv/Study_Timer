@@ -158,76 +158,70 @@ export const getLatestSessionController = async (
 			order: [["createdAt", "DESC"]],
 		});
 
-		if (!session) {
-			res.status(400).json({
-				error: "Failed to latest session!",
-			});
-			return;
-		}
-		res.status(200).json({ session });
-		return;
-	} catch (error) {
-		console.log(error);
-		res.status(400).json({
-			error: "Server error occured while trying to get latest session!",
-		});
-		return;
-	}
+    if (!session) {
+      res.status(404).json({
+        error: "Session not found for this user with the given parameters",
+      });
+      return;
+    }
+    res.status(200).json({ session });
+    return;
+  } catch (error) {
+    console.error("Error fetching session:", error);
+    res.status(500).json({
+      error: "Internal server error while fetching session",
+    });
+    return;
+  }
 };
 
 export const updateSessionController = async (req: Request, res: Response) => {
-	const userId = req.user?.sub;
-
-	if (!userId) {
-		res.status(401).json({
-			error: "Not authenticated: Failed to get a authenticated user!",
-		});
-		return;
-	}
-
-	const { id } = req.params;
-	const updatedTime = req.body.time;
-	try {
-		const updatedSession = await Session.update(
-			{ time: updatedTime },
-			{
-				where: {
-					userId,
-					id,
-				},
-				returning: true,
-			}
-		);
-		if (!updatedSession[1]) {
-			res.status(400).json({
-				error: "Failed to update session!",
-			});
-			return;
-		}
-		res.status(200).json({
-			message: "Session updated successfully",
-			session: updatedSession[1][0], // The updated session data (based on your ORM's return)
-		});
-		return;
-	} catch (error) {
-		console.log(error);
-		res.status(400).json({
-			error: "Server error occured while trying to update session!",
-		});
-		return;
-	}
+  if (!req.user) {
+    res.status(401).json({
+      error: "Not authenticated: Couldn't get authentication state",
+    });
+    return;
+  }
+  const userId = req.user.sub;
+  const { id } = req.params;
+  const updatedTime = req.body.time;
+  try {
+    const updatedSession = await Session.update(
+      { time: updatedTime },
+      {
+        where: {
+          userId,
+          id,
+        },
+        returning: true,
+      }
+    );
+    if (!updatedSession[1]) {
+      res.status(404).json({ error: "Session not found" });
+      return;
+    }
+    res.status(200).json({
+      message: "Session updated successfully",
+      session: updatedSession[1][0], // The updated session data (based on your ORM's return)
+    });
+    return;
+  } catch (error) {
+    console.error("Error updating session:", error);
+    res.status(500).json({
+      error: "Internal server error while updating session",
+    });
+    return;
+  }
 };
 
 export const deleteSessionController = async (req: Request, res: Response) => {
-	const userId = req.user?.sub;
-
-	if (!userId) {
+	if (!req.user) {
 		res.status(401).json({
-			error: "Not authenticated: Failed to get a authenticated user!",
+			error: "Not authenticated: Couldn't get authentication state",
 		});
 		return;
 	}
-
+	const userId = req.user.sub;
 	const { id } = req.params;
 	try {
 		const deleted = await Session.destroy({
@@ -237,9 +231,7 @@ export const deleteSessionController = async (req: Request, res: Response) => {
 			},
 		});
 		if (!deleted) {
-			res.status(400).json({
-				error: "Failed to delete session!",
-			});
+			res.status(404).json({ error: "Session not found" });
 			return;
 		}
 		res.status(200).json({
@@ -247,9 +239,9 @@ export const deleteSessionController = async (req: Request, res: Response) => {
 			session: id, // The updated session data (based on your ORM's return)
 		});
 	} catch (error) {
-		console.log(error);
-		res.status(400).json({
-			error: "Server error occured while trying to delete session!",
+		console.error("Error deleting session:", error);
+		res.status(500).json({
+			error: "Internal server error while deleting session",
 		});
 		return;
 	}
