@@ -9,7 +9,7 @@ export const userLoginController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { email, password } = req.body;
+	const { email, password } = req.body;
 
   try {
     const { user, tokens } = await loginUser(email, password);
@@ -24,7 +24,7 @@ export const userRegisterController = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { username, email, password } = req.body;
+	const { username, email, password } = req.body;
 
   try {
     const { user, tokens } = await registerUser(username, email, password);
