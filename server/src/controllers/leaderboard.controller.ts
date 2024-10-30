@@ -1,7 +1,7 @@
 import { Session } from "@/db/models/session.model";
 import { User } from "@/db/models/user.model";
 import { Request, Response } from "express";
-import { Sequelize, Op, fn, col, literal } from "sequelize";
+import { fn, col, literal } from "sequelize";
 
 export const getLeaderboard = async (req: Request, res: Response) => {
 	const page = parseInt(req.query.page as string) || 1;

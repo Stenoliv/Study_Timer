@@ -1,22 +1,20 @@
 import { Session } from "@/db/models/session.model";
-import { User } from "@/db/models/user.model";
 import { createSession } from "@/services/session.service";
 import { Request, Response } from "express";
-import { id } from "jest.config";
 import { Op } from "sequelize";
 
 export const getSessionStatsController = async (
 	req: Request,
 	res: Response
 ) => {
-	if (!req.user) {
+	const userId = req.user?.sub;
+
+	if (!userId) {
 		res.status(401).json({
-			error: "Not authenticated: Couldn't get authentication state",
+			error: "Not authenticated: Failed to get a authenticated user!",
 		});
 		return;
 	}
-
-	const userId = req.user.sub;
 
 	// Get current date and start of the day
 	const today = new Date();
@@ -42,7 +40,7 @@ export const getSessionStatsController = async (
 
 	// Get total hours
 	const totalSessions = await Session.findAll({
-		where: { userId: req.user.sub },
+		where: { userId: userId },
 	});
 	const totalHours = totalSessions.reduce(
 		(acc, session) => acc + session.time,
@@ -75,7 +73,17 @@ export const createSessionController = async (req: Request, res: Response) => {
 	const userId = req.user?.sub;
 
 	if (!userId) {
-		throw new Error("Failed to create session");
+		res.status(401).json({
+			error: "Not authenticated: Failed to get a authenticated user!",
+		});
+		return;
+	}
+
+	if (typeof name !== "string" || typeof time !== "number") {
+		res.status(400).json({
+			error: "Invalid input types",
+		});
+		return;
 	}
 
 	try {
@@ -84,21 +92,24 @@ export const createSessionController = async (req: Request, res: Response) => {
 			session,
 		});
 	} catch (error) {
-		res.status(400).json({
-			error: "Failed to create session",
+		console.log(error);
+		res.status(500).json({
+			error: "Server error occured while trying to create session!",
 		});
+		return;
 	}
 };
 
 export const getSessionController = async (req: Request, res: Response) => {
-	if (!req.user) {
+	const userId = req.user?.sub;
+
+	if (!userId) {
 		res.status(401).json({
-			error: "Not authenticated: Couldn't get authentication state",
+			error: "Not authenticated: Failed to get a authenticated user!",
 		});
 		return;
 	}
 
-	const userId = req.user.sub;
 	const { id } = req.params;
 
 	try {
@@ -110,17 +121,17 @@ export const getSessionController = async (req: Request, res: Response) => {
 		});
 
 		if (!session) {
-			res.status(404).json({
-				error: "Session not found for this user with the given parameters",
+			res.status(400).json({
+				error: "Failed to get session!",
 			});
 			return;
 		}
 		res.status(200).json({ session });
 		return;
 	} catch (error) {
-		console.error("Error fetching session:", error);
-		res.status(500).json({
-			error: "Internal server error while fetching session",
+		console.log(error);
+		res.status(400).json({
+			error: "Server error occured while trying to get session!",
 		});
 		return;
 	}
@@ -130,14 +141,14 @@ export const getLatestSessionController = async (
 	req: Request,
 	res: Response
 ) => {
-	if (!req.user) {
+	const userId = req.user?.sub;
+
+	if (!userId) {
 		res.status(401).json({
-			error: "Not authenticated: Couldn't get authentication state",
+			error: "Not authenticated: Failed to get a authenticated user!",
 		});
 		return;
 	}
-
-	const userId = req.user.sub;
 
 	try {
 		const session = await Session.findOne({
@@ -148,30 +159,32 @@ export const getLatestSessionController = async (
 		});
 
 		if (!session) {
-			res.status(404).json({
-				error: "Session not found for this user with the given parameters",
+			res.status(400).json({
+				error: "Failed to latest session!",
 			});
 			return;
 		}
 		res.status(200).json({ session });
 		return;
 	} catch (error) {
-		console.error("Error fetching session:", error);
-		res.status(500).json({
-			error: "Internal server error while fetching session",
+		console.log(error);
+		res.status(400).json({
+			error: "Server error occured while trying to get latest session!",
 		});
 		return;
 	}
 };
 
 export const updateSessionController = async (req: Request, res: Response) => {
-	if (!req.user) {
+	const userId = req.user?.sub;
+
+	if (!userId) {
 		res.status(401).json({
-			error: "Not authenticated: Couldn't get authentication state",
+			error: "Not authenticated: Failed to get a authenticated user!",
 		});
 		return;
 	}
-	const userId = req.user.sub;
+
 	const { id } = req.params;
 	const updatedTime = req.body.time;
 	try {
@@ -186,7 +199,9 @@ export const updateSessionController = async (req: Request, res: Response) => {
 			}
 		);
 		if (!updatedSession[1]) {
-			res.status(404).json({ error: "Session not found" });
+			res.status(400).json({
+				error: "Failed to update session!",
+			});
 			return;
 		}
 		res.status(200).json({
@@ -195,22 +210,24 @@ export const updateSessionController = async (req: Request, res: Response) => {
 		});
 		return;
 	} catch (error) {
-		console.error("Error updating session:", error);
-		res.status(500).json({
-			error: "Internal server error while updating session",
+		console.log(error);
+		res.status(400).json({
+			error: "Server error occured while trying to update session!",
 		});
 		return;
 	}
 };
 
 export const deleteSessionController = async (req: Request, res: Response) => {
-	if (!req.user) {
+	const userId = req.user?.sub;
+
+	if (!userId) {
 		res.status(401).json({
-			error: "Not authenticated: Couldn't get authentication state",
+			error: "Not authenticated: Failed to get a authenticated user!",
 		});
 		return;
 	}
-	const userId = req.user.sub;
+
 	const { id } = req.params;
 	try {
 		const deleted = await Session.destroy({
@@ -220,7 +237,9 @@ export const deleteSessionController = async (req: Request, res: Response) => {
 			},
 		});
 		if (!deleted) {
-			res.status(404).json({ error: "Session not found" });
+			res.status(400).json({
+				error: "Failed to delete session!",
+			});
 			return;
 		}
 		res.status(200).json({
@@ -228,9 +247,9 @@ export const deleteSessionController = async (req: Request, res: Response) => {
 			session: id, // The updated session data (based on your ORM's return)
 		});
 	} catch (error) {
-		console.error("Error deleting session:", error);
-		res.status(500).json({
-			error: "Internal server error while deleting session",
+		console.log(error);
+		res.status(400).json({
+			error: "Server error occured while trying to delete session!",
 		});
 		return;
 	}

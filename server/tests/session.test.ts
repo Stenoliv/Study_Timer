@@ -1,92 +1,112 @@
 import request from "supertest";
-import { Session } from "@/db/models/session.model";
-import { Model } from "sequelize";
 import app from "@/app";
+import { testDB } from "@/db/connection";
+import { Sequelize } from "sequelize";
 
-jest.mock("@/db/models/session.model");
-const mockedSession = Session as jest.Mocked<typeof Session>;
-
-let authToken: string;
 let userId: string;
-interface SessionAttributes {
-  id: string;
-  userId: string;
-  time: number;
-}
+let authToken: string;
+let sessionId: string;
 
-// Type the mock as a Model instance with these attributes
-type MockSessionModel = Model<SessionAttributes> & SessionAttributes;
-describe("Session Controllers", () => {
-  beforeAll(async () => {
-    // Login and store the token before running tests
-    const response = await request(app).post("/api/auth/signin").send({
-      email: "test@test.test",
-      password: "pw123456",
-    });
+beforeAll(async () => {
+	sequelize = testDB("test_db_session");
+	await sequelize.authenticate();
+	await sequelize.sync({ force: true });
 
-    authToken = response.body.tokens.access;
-    userId = response.body.user.id;
-  });
+	const response = await request(app).post("/auth/signup").send({
+		username: "test",
+		email: "test@test.test",
+		password: "pw123456",
+	});
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+	expect(response.status).toBe(201);
+	userId = response.body.user.id;
+});
 
-  // Test getSessionStatsController
-  describe("GET /api/sessions/stats", () => {
-    it("should return session stats for authenticated user", async () => {
-      mockedSession.findAll.mockResolvedValueOnce([]);
+afterAll(async () => {
+	await sequelize.close();
+});
 
-      const response = await request(app)
-        .get("/api/sessions/stats")
-        .set("Authorization", `Bearer ${authToken}`);
-      expect(response.status).toBe(200);
-      expect(response.body.todaysMinutes).toBe(270);
-    });
+let sequelize: Sequelize;
 
-    it("should return 401 for unauthenticated user", async () => {
-      const response = await request(app).get("/api/sessions/stats");
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe(
-        "Not authenticated: Couldn't get authentication state"
-      );
-    });
-  });
+// Sign in user before each
+beforeEach(async () => {
+	// Login and store the token before running tests
+	const response = await request(app).post("/auth/signin").send({
+		email: "test@test.test",
+		password: "pw123456",
+	});
 
-  // Test createSessionController
-  describe("POST /api/sessions", () => {
-    it("should create a session for authenticated user", async () => {
-      mockedSession.create.mockResolvedValue({
-        id: "newSessionId",
-        userId,
-        name: "Test Session",
-        time: 120,
-      });
+	expect(response.status).toBe(200);
+	authToken = response.body.tokens.access;
+});
 
-      const response = await request(app)
-        .post("/api/sessions")
-        .set("Authorization", `Bearer ${authToken}`)
-        .send({ name: "Test Session", time: 120 });
+// test createSessionController
+describe("POST /sessions", () => {
+	// Create session unsuccesfully
+	it("should create a session for authenticated user", async () => {
+		const response = await request(app)
+			.post("/sessions")
+			.set("Authorization", `Bearer ${authToken}`)
+			.send({ name: "Test Session", time: 120 });
 
-      expect(response.status).toBe(200);
-      expect(response.body.session).toHaveProperty("id");
-    });
-  });
+		expect(response.status).toBe(200);
+		expect(response.body).toHaveProperty("session");
+		expect(response.body.session).toHaveProperty("id");
+		expect(response.body.session).toHaveProperty("time");
+		expect(response.body.session.time).toBe(120);
+		sessionId = response.body.session.id; // Store id
+	});
 
-  // Test getSessionController
-  describe("GET /api/sessions/:id", () => {
-    it("should return session for authenticated user", async () => {
-      mockedSession.findOne.mockResolvedValueOnce({
-        id: "sessionId",
-        userId,
-        time: 120,
-      } as MockSessionModel);
+	// Create session unsuccesfully
+	it("shouldn't create a session for authenticated user with invalid input", async () => {
+		const res = await request(app)
+			.post("/sessions")
+			.set("Authorization", `Bearer ${authToken}`)
+			.send({ name: 2, time: "test" });
 
-      const response = await request(app)
-        .get("/api/sessions/sessionId")
-        .set("Authorization", `Bearer ${authToken}`);
-      expect(response.status).toBe(200);
-      expect(response.body.session).toHaveProperty("id");
-    });
-  });
+		expect(res.status).toBe(400);
+		expect(res.body).not.toHaveProperty("session");
+		expect(res.body.error).toBe("Invalid input types");
+	});
+
+	// Create session unsuccesfully
+	it("shouldn't create a session for a unauthenticated user", async () => {
+		const res = await request(app)
+			.post("/sessions")
+			.send({ name: "Test", time: 20 });
+
+		expect(res.status).toBe(401);
+		expect(res.body).not.toHaveProperty("session");
+		expect(res.body.error).toBe("Not authenticated: No token provided");
+	});
+});
+
+// Test getSessionController
+describe("GET /sessions/:id", () => {
+	it("should return session for authenticated user", async () => {
+		const response = await request(app)
+			.get(`/sessions/${sessionId}`)
+			.set("Authorization", `Bearer ${authToken}`);
+		expect(response.status).toBe(200);
+		expect(response.body.session).toHaveProperty("id");
+		expect(response.body.session).toHaveProperty("time");
+		expect(response.body.session.time).toBe(120);
+	});
+});
+
+// Test getSessionStatsController
+describe("GET /sessions/stats", () => {
+	it("should return session stats for authenticated user", async () => {
+		const response = await request(app)
+			.get("/sessions/stats")
+			.set("Authorization", `Bearer ${authToken}`);
+		expect(response.status).toBe(200);
+		expect(response.body.todaysMinutes).toBe(120);
+	});
+
+	it("should return 401 for unauthenticated user", async () => {
+		const response = await request(app).get("/sessions/stats");
+		expect(response.status).toBe(401);
+		expect(response.body.error).toBe("Not authenticated: No token provided");
+	});
 });
