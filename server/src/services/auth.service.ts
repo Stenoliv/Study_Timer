@@ -13,11 +13,11 @@ export async function loginUser(
     throw new Error("User not found");
   }
 
-  // Check if password is valid
-  const isPasswordValid = await user.validatePassword(password);
-  if (!isPasswordValid) {
-    throw new Error("Invalid password");
-  }
+	// Check if password is valid
+	const isPasswordValid = await user.validatePassword(password);
+	if (!isPasswordValid) {
+		throw new Error("Invalid password");
+	}
 
   const access: string = await generateToken(user.id, JwtType.Access);
   const refresh: string = await generateToken(user.id, JwtType.Refresh);

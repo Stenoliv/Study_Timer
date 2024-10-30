@@ -8,7 +8,7 @@ export default function Profile() {
   return (
     <div className="flex flex-col p-6 gap-6 bg-slate-800 rounded-xl shadow-2xl cursor-default">
       <div className="flex justify-between items-center gap-5 my-3">
-        <img src="src/assets/avatar.svg" alt="" className="w-32 h-32" />
+        <img src="/avatar.svg" alt="" className="w-32 h-32" />
         <div className="flex flex-col min-w-80">
           <h2 className="text-white underline font-bold text-3xl text-left mb-4">
             Study Profile
@@ -36,7 +36,6 @@ export default function Profile() {
           Study stats:
         </h2>{" "}
         <StudyList />
-        <BarChart />
       </div>
     </div>
   );

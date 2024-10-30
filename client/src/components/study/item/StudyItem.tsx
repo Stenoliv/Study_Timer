@@ -45,9 +45,8 @@ export default function StudyItem(props: StudyItemProps) {
       </div>
       <img
         className="size-8 bg-red-500 rounded-md border-black border-4 cursor-pointer"
-        src="src/assets/trashcan.svg"
+        src="/trashcan.svg"
         onClick={handleDelete}
-        title="Delete session"
       />
     </div>
   );
