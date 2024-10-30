@@ -10,9 +10,9 @@ const app: Express = express();
 app.use(express.json());
 app.use(declareHandler);
 app.use(
-  cors({
-    origin: "*",
-  })
+	cors({
+		origin: "*",
+	})
 );
 
 app.use("/auth", authRoutes);

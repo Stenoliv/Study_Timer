@@ -1,8 +1,6 @@
 import { Session } from "@/db/models/session.model";
-import { User } from "@/db/models/user.model";
 import { createSession } from "@/services/session.service";
 import { Request, Response } from "express";
-import { id } from "jest.config";
 import { Op } from "sequelize";
 
 export const getSessionStatsController = async (
