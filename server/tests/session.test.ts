@@ -1,18 +1,7 @@
 import request from "supertest";
-import express, { Request, Response } from "express";
-import bodyParser from "body-parser";
-import {
-  getSessionStatsController,
-  createSessionController,
-  getSessionController,
-  getLatestSessionController,
-  updateSessionController,
-  deleteSessionController,
-} from "@/controllers/session.controller";
 import { Session } from "@/db/models/session.model";
-
-const app = express();
-app.use(bodyParser.json());
+import { Model } from "sequelize";
+import app from "@/app";
 
 jest.mock("@/db/models/session.model");
 const mockedSession = Session as jest.Mocked<typeof Session>;
@@ -26,17 +15,7 @@ interface SessionAttributes {
 }
 
 // Type the mock as a Model instance with these attributes
-import { Model } from "sequelize";
 type MockSessionModel = Model<SessionAttributes> & SessionAttributes;
-
-// Define routes for testing
-app.get("/api/sessions/stats", getSessionStatsController);
-app.post("/api/sessions", createSessionController);
-app.get("/api/sessions/:id", getSessionController);
-app.get("/api/sessions/latest", getLatestSessionController);
-app.put("/api/sessions/:id", updateSessionController);
-app.delete("/api/sessions/:id", deleteSessionController);
-
 describe("Session Controllers", () => {
   beforeAll(async () => {
     // Login and store the token before running tests
@@ -44,11 +23,9 @@ describe("Session Controllers", () => {
       email: "test@test.test",
       password: "pw123456",
     });
-    authToken = response.body.tokens;
-    userId = response.body.user;
-    console.log(response.body);
-    console.log(userId);
-    console.log(authToken);
+
+    authToken = response.body.tokens.access;
+    userId = response.body.user.id;
   });
 
   afterEach(() => {
