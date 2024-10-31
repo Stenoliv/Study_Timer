@@ -40,7 +40,7 @@ jobs:
           echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
 
       - name: Build and Test with Docker Compose
-        run: docker-compose -f docker-compose.yml --build --abort-on-container-exit
+        run: docker-compose -f docker-compose.yml build
         env:
           DOCKER_USERNAME: ${{ env.DOCKER_USERNAME }}
           TAG: ${{ env.TAG }}
