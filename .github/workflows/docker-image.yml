@@ -65,11 +65,11 @@ jobs:
         with:
           context: ./client
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.LATEST_BRANCH_TAG }}, ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.BASE_TAG }}
+          tags: "${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.LATEST_BRANCH_TAG }},${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.BASE_TAG }}"
 
       - name: Build and push backend
         uses: docker/build-push-action@v6
         with:
           context: ./server
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/backend:${{ env.LATEST_BRANCH_TAG }}, ${{ secrets.DOCKER_USERNAME }}/backend:${{ env.BASE_TAG }}
+          tags: "${{ secrets.DOCKER_USERNAME }}/backend:${{ env.LATEST_BRANCH_TAG }},${{ secrets.DOCKER_USERNAME }}/backend:${{ env.BASE_TAG }}"
