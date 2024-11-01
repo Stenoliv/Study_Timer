@@ -30,11 +30,11 @@ jobs:
 
       # Run backend test before building
       - name: Install Backend Dependencies
-        working-directory: ./backend
+        working-directory: /backend
         run: npm install
 
       - name: Run Backend Jest Tests
-        working-directory: ./backend
+        working-directory: /backend
         run: npm test
         env:
           CI: true
