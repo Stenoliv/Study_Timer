@@ -54,11 +54,18 @@ jobs:
           IMAGE_TAG="${BASE_TAG}-${NEW_VERSION}"
           LATEST_BRANCH_TAG="${BASE_TAG}"
 
-          NEW_VERSION=$(cat version.txt 2>/dev/null || echo "0.1")
+          if [ -z "$BASE_TAG" ]; then
+            echo "Error: BASE_TAG is empty. Ensure branch name matches one of the expected values."
+            exit 1
+          fi
+
+          IMAGE_TAG="${BASE_TAG}-${NEW_VERSION}"
+          LATEST_BRANCH_TAG="${BASE_TAG}"
+
           echo $((NEW_VERSION + 1)) > version.txt
 
-          export IMAGE_TAG
-          export LATEST_BRANCH_TAG
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "LATEST_BRANCH_TAG=$LATEST_BRANCH_TAG" >> $GITHUB_ENV
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
