@@ -26,15 +26,15 @@ jobs:
       - name: Set up Node.js for Frontend
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "latest"
 
       # Run backend test before building
       - name: Install Backend Dependencies
-        working-directory: /backend
+        working-directory: ./backend
         run: npm install
 
       - name: Run Backend Jest Tests
-        working-directory: /backend
+        working-directory: ./backend
         run: npm test
         env:
           CI: true
