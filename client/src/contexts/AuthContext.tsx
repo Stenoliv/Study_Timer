@@ -34,7 +34,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
 				setAuhtenticated(true);
 				setTokens(response.data.tokens);
 				setUser(response.data.user);
-				navigate("/timer");
+				navigate("/");
 			})
 			.catch((error) => {
 				if (axios.isAxiosError(error)) {
@@ -61,7 +61,7 @@ export const AuthProvider = (props: AuthProviderProps) => {
 				setAuhtenticated(true);
 				setTokens(response.data.tokens);
 				setUser(response.data.user);
-				navigate("/timer");
+				navigate("/");
 			})
 			.catch((error) => {
 				if (axios.isAxiosError(error)) {
