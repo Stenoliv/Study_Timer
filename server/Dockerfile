@@ -1,5 +1,4 @@
-# Stage 1: Build the backend
-FROM node:18 AS backend-build
+FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -8,10 +7,10 @@ COPY /src ./src
 RUN npm run build
 
 # Stage 2: Serve the application
-FROM node:18
-WORKDIR /app
-COPY --from=backend-build /app/dist ./dist
-COPY --from=backend-build /app/node_modules ./node_modules
+FROM node:18-alpine
+WORKDIR /src
+COPY --from=build /app/dist/src ./
+COPY --from=build /app/node_modules ./node_modules
 ENV PORT=${POST}
 EXPOSE 5000
-CMD ["node", "dist/index.js"] 
+CMD ["node", "index.js"] 
