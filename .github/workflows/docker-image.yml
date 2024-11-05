@@ -1,0 +1,97 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+      - mvp
+      - prototype
+  pull_request:
+    branches:
+      - main
+      - beta
+      - mvp
+      - prototype
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Install Node.js and run tests in frontend
+      - name: Set up Node.js for Frontend
+        uses: actions/setup-node@v3
+        with:
+          node-version: "latest"
+
+      # Run backend test before building
+      - name: Install Backend Dependencies
+        run: |
+          cd ./server
+          npm install
+          npm test
+        env:
+          CI: true
+
+      # If test complete run docker build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker image tag
+        id: tag
+        run: |
+          # Get the new version from the file or default to "0.1"
+          NEW_VERSION=$(cat version.txt 2>/dev/null || echo "0.1")
+
+          # Define BASE_TAG based on the branch name
+          BASE_TAG=$(echo "${GITHUB_REF_NAME}" | grep -oE "main|beta|mvp|prototype")
+
+          # If BASE_TAG is empty, set a default value to prevent errors
+          if [ -z "$BASE_TAG" ]; then
+            echo "BASE_TAG is empty, setting to 'latest' as default"
+            BASE_TAG="latest"
+          fi
+
+          # Construct the IMAGE_TAG and LATEST_BRANCH_TAG variables
+          IMAGE_TAG="${BASE_TAG}-${NEW_VERSION}"
+          LATEST_BRANCH_TAG="${BASE_TAG}"
+
+          # Update version number in version.txt
+          echo $((NEW_VERSION + 1)) > version.txt
+
+          # Export the tags as environment variables
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "LATEST_BRANCH_TAG=$LATEST_BRANCH_TAG" >> $GITHUB_ENV
+
+      - name: Confirm tag values
+        run: |
+          echo "IMAGE_TAG=${IMAGE_TAG}"
+          echo "LATEST_BRANCH_TAG=${LATEST_BRANCH_TAG}"
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./client
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.LATEST_BRANCH_TAG }}
+            ${{ secrets.DOCKER_USERNAME }}/frontend:${{ env.IMAGE_TAG }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./server
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/backend:${{ env.LATEST_BRANCH_TAG }}
+            ${{ secrets.DOCKER_USERNAME }}/backend:${{ env.IMAGE_TAG }}
