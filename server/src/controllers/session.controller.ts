@@ -76,6 +76,13 @@ export const createSessionController = async (req: Request, res: Response) => {
 		throw new Error("Failed to create session");
 	}
 
+	if (typeof name !== "string" || typeof time !== "number") {
+		res.status(400).json({
+			error: "Invalid input types",
+		});
+		return;
+	}
+
 	try {
 		const session = await createSession(userId, name, time);
 		res.status(200).json({

@@ -15,4 +15,21 @@ const sequelize = new Sequelize({
 	},
 });
 
+export const testDB = (name: string) =>
+	new Sequelize({
+		database: name,
+		dialect: "sqlite",
+		username: "studytimer",
+		password: "",
+		storage: ":memory:",
+		models: [__dirname + "/**/*.model.ts"],
+		modelMatch: (filename, member) => {
+			return (
+				filename.substring(0, filename.indexOf(".model")) ===
+				member.toLowerCase()
+			);
+		},
+		logging: false,
+	});
+
 export default sequelize;
