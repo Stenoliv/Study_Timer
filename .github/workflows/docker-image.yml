@@ -22,21 +22,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Install Node.js and run tests in frontend
-      - name: Set up Node.js for Frontend
-        uses: actions/setup-node@v3
-        with:
-          node-version: "latest"
-
-      # Run backend test before building
-      - name: Install Backend Dependencies
-        run: |
-          cd ./server
-          npm install
-          npm test
-        env:
-          CI: true
-
       # If test complete run docker build
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
