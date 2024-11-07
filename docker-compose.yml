@@ -23,3 +23,5 @@ services:
       - "5000" # Maps port 5000 on the host to port 5000 in the container
     environment:
       - NODE_ENV=production
+    volumes:
+      - ./server/data:/app
